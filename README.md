@@ -19,6 +19,16 @@ For this project, you will write a Packer template and a Terraform template to d
 ### Instructions
 **Your words here**
 
+``` 
+ az policy definition create --name "tagging-policy" --display-name "Tagging-policy" --description "Enforcing all resource to have tags" --rules "policy.json" --mode All 
+ ```
+```
+ az policy assignment create --policy tagging-policy --name "tagging-policy"  --display-name "Tagging policy" --description "Policy to enforce tagging on all resources in the subscription" 
+ ```
+
+ ```
+ az policy assignment list
+ ```
 ### Output
 **Your words here**
 
