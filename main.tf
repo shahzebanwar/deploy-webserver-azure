@@ -8,14 +8,11 @@ data "azurerm_image" "main" {
     resource_group_name = "udacity-project1"
 }
 
-# Import the resource group where the VM will be created
-
 resource "azurerm_resource_group" "main" {
     name         = "udacity-project1"
     location     = "francecentral"
 }
 
-# Create virtual network
 resource "azurerm_virtual_network" "main" {
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/22"]
