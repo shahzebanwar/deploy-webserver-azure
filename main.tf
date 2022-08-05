@@ -127,8 +127,8 @@ resource "azurerm_availability_set" "main" {
     name                            = "${var.prefix}-avail-set"
     location                        = azurerm_resource_group.main.location
     resource_group_name             = azurerm_resource_group.main.name
-    platform_update_domain_count    = 5
-    platform_fault_domain_count     = 2
+    platform_update_domain_count    = 2
+    platform_fault_domain_count     = 1
 }
 
 

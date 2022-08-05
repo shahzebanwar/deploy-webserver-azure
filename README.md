@@ -1,7 +1,7 @@
 # Azure Infrastructure Operations Project: Deploying a scalable IaaS web server in Azure
 
 ### Introduction
-For this project, you will write a Packer template and a Terraform template to deploy a customizable, scalable web server in Azure.
+Using this repo, you can deploy a scalable webserver in Azure.
 
 ### Getting Started
 1. Clone this repository
