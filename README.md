@@ -63,5 +63,6 @@ terraform apply solution.plan
 ```
  
 ### Output
-**Your words here**
+The output of the deployment will look something like this:
+ ![](Output.png)
 
