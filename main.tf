@@ -2,16 +2,20 @@ provider "azurerm"{
     features{}
 }
 
-resource "azurerm_resource_group" "main" {
-    name         = "udacity-project1"
-    location     = "francecentral"
+/* resource "azurerm_resource_group" "main" {
+    name         = "${var.prefix}"
+    location     = "${var.location}"
+} */
+
+data "azurerm_resource_group" "main" {
+  name = var.resource-group
 }
 
 resource "azurerm_virtual_network" "main" {
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/22"]
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
   
   tags                = {
     environment = "project1"
@@ -20,15 +24,15 @@ resource "azurerm_virtual_network" "main" {
 
 resource "azurerm_subnet" "internal" {
   name                 = "${var.prefix}-subnet"
-  resource_group_name  = azurerm_resource_group.main.name
+  resource_group_name  = data.azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.0.0/24"]
 }
 
 resource "azurerm_network_security_group" "main"{
     name                            = "${var.prefix}-nsg"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
+    location                        = data.azurerm_resource_group.main.location
+    resource_group_name             = data.azurerm_resource_group.main.name
 
     security_rule {
         name                        = "Allow_local_access"
@@ -65,11 +69,11 @@ resource "azurerm_network_security_group" "main"{
 
 resource "azurerm_network_interface" "main" {
 
-    count   = var.cluster_size
+    count = var.vms-count > 5 ? 5 : var.vms-count
 
     name                            = "${var.prefix}-nic-${count.index}"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
+    location                        = data.azurerm_resource_group.main.location
+    resource_group_name             = data.azurerm_resource_group.main.name
     
     ip_configuration {
         name                        = "nic-ip-config"
@@ -84,8 +88,8 @@ resource "azurerm_network_interface" "main" {
 
 resource "azurerm_public_ip" "main" {
     name                            = "${var.prefix}-lb-public-ip"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
+    location                        = data.azurerm_resource_group.main.location
+    resource_group_name             = data.azurerm_resource_group.main.name
     allocation_method               = "Static"
     
     tags = {
@@ -95,11 +99,11 @@ resource "azurerm_public_ip" "main" {
 
 resource "azurerm_lb" "main" {
     name                            = "${var.prefix}-lb"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
+    location                        = data.azurerm_resource_group.main.location
+    resource_group_name             = data.azurerm_resource_group.main.name
     
     frontend_ip_configuration {
-        name                        = "${var.prefix}-lb-frontend-ip"
+        name                        = "${var.prefix}-lb-public-ip"
         public_ip_address_id        = azurerm_public_ip.main.id
     }
 
@@ -115,7 +119,8 @@ resource "azurerm_lb_backend_address_pool" "main" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "main" {
-    count  = var.cluster_size
+    
+    count   = var.vms-count > 5 ? 5 : var.vms-count
 
     network_interface_id            = azurerm_network_interface.main[count.index].id
     ip_configuration_name           = "nic-ip-config"
@@ -125,30 +130,30 @@ resource "azurerm_network_interface_backend_address_pool_association" "main" {
 
 resource "azurerm_availability_set" "main" {
     name                            = "${var.prefix}-avail-set"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
-    platform_update_domain_count    = 2
-    platform_fault_domain_count     = 1
+    location                        = data.azurerm_resource_group.main.location
+    resource_group_name             = data.azurerm_resource_group.main.name
+    platform_update_domain_count    = 5
+    platform_fault_domain_count     = 2
 }
 
 
 # Import Packer Image
 data "azurerm_image" "main" {
     name                = "project1-image"
-    resource_group_name = "udacity-project1"
+    resource_group_name = var.resource-group
 }
 
 resource "azurerm_linux_virtual_machine" "main"{
 
-    count                          = var.cluster_size   # number of VMs to create
+    count   = var.vms-count > 5 ? 5 : var.vms-count   # number of VMs to create and assuring the count stays below 5
     name                            = "${var.prefix}-vm-${count.index}"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
-    size                            = "Standard_D2_v3"
+    location                        = data.azurerm_resource_group.main.location
+    resource_group_name             = data.azurerm_resource_group.main.name
+    size                            = "Standard_B2s"
     availability_set_id             = azurerm_availability_set.main.id
     network_interface_ids           = [azurerm_network_interface.main[count.index].id]
-    admin_username                  = var.admin_username
-    admin_password                  = var.admin_password
+    admin_username                  = var.username
+    admin_password                  = var.password
     disable_password_authentication = false
     source_image_id                 = data.azurerm_image.main.id
 
@@ -166,11 +171,11 @@ resource "azurerm_linux_virtual_machine" "main"{
 
 resource "azurerm_managed_disk" "main" {
     name                            = "${var.prefix}-managed-disk"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
+    location                        = data.azurerm_resource_group.main.location
+    resource_group_name             = data.azurerm_resource_group.main.name
     storage_account_type            = "Standard_LRS"
     create_option                   = "Empty"
-    disk_size_gb                    = 5
+    disk_size_gb                    = "5"
 
     tags = {
         environment = "project1"

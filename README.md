@@ -42,7 +42,7 @@ az group create --name udacity-project1 --location francecentral --tags "udacity
  6. Packer needs some enviornment variables which you can obtain by running the following command:
 
 ```bash
-  az ad sp create-for-rbac --role Contributor --scopes /subscriptions/0dd40ecd-a4b0-47e3-b52d-374f828c4efd --query "{ client_id: appId, client_secret: password}  
+  az ad sp create-for-rbac --role Contributor --scopes /subscriptions/<subscription_id> --query "{ client_id: appId, client_secret: password}"  
  ```
  you can use these values inside the `packer.json` file's variables section or you can import them into your `.env` file using 
 ```
@@ -51,7 +51,8 @@ az group create --name udacity-project1 --location francecentral --tags "udacity
     export ARM_SUBSCRIPTION_ID=<subscription_id>
  ```
  
- 7. Now built the packer template using `packer build .\server.json`.This will take sometime and you will see the image inside the resource group. You can use the `az image list` command to verify the deployment.
+ 7. Now built the packer template using `packer build .\server.json`.This will take sometime and you will see the image inside the resource group. You can use the `az image list` command to verify the deployment. Alrernatively you could also see on the Azure portal which will look something like this:
+ ![Packer Image on the portal](packer-image.png)
 
 8. Now, since the stage is ready, it's time to deploy the webserver. Use the following command to deploy the webserver:
 
@@ -61,7 +62,21 @@ terraform import azurerm_resource_group.main /subscriptions/<subscription_id>/re
 terraform plan -out solution.plan
 terraform apply solution.plan
 ```
- 
+9. To verify the deployment, use the following command:
+
+```bash
+terraform show
+```
+10. To delete the deployment, use the following command:
+
+```bash
+terraform destroy
+``` 
+
+It will ask for a confirmation before deleting the deployment in a following manner:
+![](destroy-confirmation.png)
+
+
 ### Output
 The output of the deployment will look something like this:
  ![](Output.png)

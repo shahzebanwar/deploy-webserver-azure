@@ -15,12 +15,10 @@
     "image_publisher": "Canonical",
     "image_offer": "UbuntuServer",
     "image_sku": "18.04-LTS",
-
-    "managed_image_resource_group_name": "udacity-project1",
+    "managed_image_resource_group_name": "project1",
     "managed_image_name": "project1-image",
-
-    "location": "francecentral",
-    "vm_size": "Standard_D2s_v3"
+	"build_resource_group_name": "project1",
+    "vm_size": "Standard_B2s"
 	}],
 	"provisioners": [{
 		"inline": [
