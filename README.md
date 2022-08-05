@@ -29,6 +29,11 @@ For this project, you will write a Packer template and a Terraform template to d
  ```
  az policy assignment list
  ```
+
+ ```
+ packer build .\server.json
+ ```
+ 
 ### Output
 **Your words here**
 
