@@ -2,12 +2,6 @@ provider "azurerm"{
     features{}
 }
 
-# Import Packer Image
-data "azurerm_image" "main" {
-    name                = "project1-image"
-    resource_group_name = "udacity-project1"
-}
-
 resource "azurerm_resource_group" "main" {
     name         = "udacity-project1"
     location     = "francecentral"
@@ -135,6 +129,13 @@ resource "azurerm_availability_set" "main" {
     resource_group_name             = azurerm_resource_group.main.name
     platform_update_domain_count    = 5
     platform_fault_domain_count     = 2
+}
+
+
+# Import Packer Image
+data "azurerm_image" "main" {
+    name                = "project1-image"
+    resource_group_name = "udacity-project1"
 }
 
 resource "azurerm_linux_virtual_machine" "main"{
