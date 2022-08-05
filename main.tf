@@ -10,7 +10,7 @@ data "azurerm_image" "main" {
 
 # Import the resource group where the VM will be created
 
-data "azurerm_resource_group" "main" {
+resource "azurerm_resource_group" "main" {
     name         = "udacity-project1"
     location     = "francecentral"
 }
@@ -79,10 +79,9 @@ resource "azurerm_network_interface" "main" {
     name                            = "${var.prefix}-nic-${count.index}"
     location                        = azurerm_resource_group.main.location
     resource_group_name             = azurerm_resource_group.main.name
-    network_security_group_id       = azurerm_network_security_group.main.id
     
     ip_configuration {
-        name                        = "${var.prefix}-ipconfig"
+        name                        = "nic-ip-config"
         subnet_id                   = azurerm_subnet.internal.id
         private_ip_address_allocation = "Dynamic"
     }
@@ -96,8 +95,7 @@ resource "azurerm_public_ip" "main" {
     name                            = "${var.prefix}-lb-public-ip"
     location                        = azurerm_resource_group.main.location
     resource_group_name             = azurerm_resource_group.main.name
-    public_ip_address_allocation    = "Static"
-    public_ip_address_version       = "IPv4"
+    allocation_method               = "Static"
     
     tags = {
         environment = "project1"
@@ -122,17 +120,15 @@ resource "azurerm_lb" "main" {
 resource "azurerm_lb_backend_address_pool" "main" {
 
     name                            = "${var.prefix}-lb-backend-pool"
-    location                        = azurerm_resource_group.main.location
-    resource_group_name             = azurerm_resource_group.main.name
     loadbalancer_id                 = azurerm_lb.main.id
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "main" {
     count  = var.cluster_size
 
-    network_interface_id            = azurerm_network_interface.main.[count.index].id
-    ip_configuration_name          = azurerm_network_interface.main.ip_configuration.name
-    loadbalancer_backend_address_pool_id = azurerm_lb_backend_address_pool.main.id
+    network_interface_id            = azurerm_network_interface.main[count.index].id
+    ip_configuration_name           = "nic-ip-config"
+    backend_address_pool_id         = azurerm_lb_backend_address_pool.main.id
 }
 
 
@@ -150,9 +146,9 @@ resource "azurerm_linux_virtual_machine" "main"{
     name                            = "${var.prefix}-vm-${count.index}"
     location                        = azurerm_resource_group.main.location
     resource_group_name             = azurerm_resource_group.main.name
-    vm_size                         = "Standard_D2_v3"
+    size                            = "Standard_D2_v3"
     availability_set_id             = azurerm_availability_set.main.id
-    network_interface_ids           = [azurerm_network_interface.main.[count.index].id]
+    network_interface_ids           = [azurerm_network_interface.main[count.index].id]
     admin_username                  = var.admin_username
     admin_password                  = var.admin_password
     disable_password_authentication = false
@@ -164,8 +160,6 @@ resource "azurerm_linux_virtual_machine" "main"{
         storage_account_type    = "Standard_LRS"
     }
 
-    delete_os_disk_on_termination = true
-    delete_data_disks_on_termination = true
 
     tags = {
         environment = "project1"

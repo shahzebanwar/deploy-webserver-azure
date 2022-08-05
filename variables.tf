@@ -9,3 +9,7 @@ variable "admin_username"{
 variable "admin_password"{
     description = "The password of the admin user"
 }
+
+variable "cluster_size"{
+    description = "The size of the cluster"
+}

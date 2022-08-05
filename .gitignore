@@ -1,6 +1,10 @@
 .DS_Store
 .DS_Store?
 .terraform
+solution.plan
 terraform.tfstate
 terraform.tfstate.backup
 terraform.tfstate.lock.info
+.terraform.lock.hcl
+
+
