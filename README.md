@@ -1,7 +1,7 @@
 # Azure Infrastructure Operations Project: Deploying a scalable IaaS web server in Azure
 
 ### Introduction
-Using this repo, you can deploy a scalable webserver in Azure using Infrastructure as a Code (IaC) techniques. The code uses HashiCorp's [Terraform](https://www.ter.raform.io/) to deploy a webserver in Azure. The virtual machine template is created using [Packer](https://www.packer.io/) while the Microsoft's [Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/cli/) is used to deploy the virtual machine like a script.
+Using this repo, you can deploy a scalable webserver in Azure using Infrastructure as a Code (IaC) techniques. The code uses HashiCorp's [Terraform](https://www.ter.raform.io/) to deploy a webserver in Azure. The virtual machine template is created using [Packer](https://www.packer.io/) while the Microsoft's [Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/cli/) is used to deploy the virtual machine like a script. Let's start!
 
 ### Getting Started
 1. Clone this repository
