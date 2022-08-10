@@ -79,5 +79,5 @@ It will ask for a confirmation before deleting the deployment in a following man
 
 ### Output
 The output of the deployment will look something like this:
- ![](Output.png)
+ ![Azure Portal](Output.png)
 
